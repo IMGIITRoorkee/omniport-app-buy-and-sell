@@ -1,0 +1,7 @@
+nomenclature:
+  name: buyandsell
+  verboseName: Buyandsell
+baseUrls:
+  http: buyandsell/
+  ws: 
+  isApi: true
