@@ -3,11 +3,16 @@ import swapper
 from django.db import models
 
 from kernel.models.root import Model
+from buy_and_sell.constants import *
+
 
 class Photo(Model):
+    """
+    Model for Storing the images of Products
+    """
         
     product_id = models.ForeignKey(
-        SaleItems,
+        SaleProduct,
         on_delete=models.CASCADE,
     )
     
@@ -19,8 +24,8 @@ class Photo(Model):
     
         ext = filename.split('.')[-1]
         
-        return (f'BuyAndSellPhoto/{instance.product_id}_
-            {instance.image_id}.{ext}')
+        return (f'BuyAndSellPhoto/{instance.product_id}\
+        _{instance.image_id}.{ext}')
         
     def __str__(self):
         """
@@ -30,33 +35,56 @@ class Photo(Model):
         return f'{self.picture.name}'
 
 
-class Product(Model):
+class AbstractProduct(PeriodMixin, Model):
+    """
+    Abstract model that includes all the basic
+    information neded for a product
+    """
     
-    user = models.ForeignKey(
-        to = swapper.get_model_name('kernel', 'Student'),
+    person = models.ForeignKey(
+        to = swapper.get_model_name('kernel', 'Person'),
     )
     
     name = models.CharField(
-        max_length = 127,
+        max_length = char_max_length,
     )
-    
+
     cost = models.IntegerField()
-    
-    detail = models.TextField()
 
-    contact = models.CharField(
-        max_length = 127,
-    )
-    
-    post_date = models.DateField()
-
-    expiry_date = models.DateField()
-    
-    email = models.EmailField()
-    
     category = models.ForeignKey(
-        to = Category
+        to = Category,
     )
+
+    sub_category = models.ForeignKey(
+        to = SubCategory,
+        blank = True,
+    )
+
+    add_phone = models.BooleanField(
+        default = 0,
+    )
+    
+    def __str__(self):
+        """
+        Return the name of the Product
+        """
+        
+        return f'{self.name}'
+
+    class Meta:
+        """
+        Meta class for AbstractProduct
+        """
+        
+        abstract = True
+
+    
+class SaleProduct(AbstractProduct):
+    """
+    Model for storing the products for sale
+    """
+    
+    details = models.TextField()
     
     warranty_detail = models.TextField(
         blank = True,        
@@ -67,22 +95,26 @@ class Product(Model):
         blank = True,
     )
     
-    is_active = models.BooleanField(
-        default = True
-    )
+
+class RequestProduct(AbstractProduct):
+    """
+    Model for storing the products requested
+    """
     
     def __str__(self):
         """
-        Return the name of the product
+        Return the name of the SaleProduct
         """
         
         return f'{self.name}'
 
-
 class BuyAndSellPayment(Model):
+    """
+    Model for listing the payment methods available
+    """
     
     name = model.CharField(
-        max_length = 127,
+        max_length = char_max_length,
         required = True,
     )
     
@@ -93,24 +125,18 @@ class BuyAndSellPayment(Model):
         return f'{self.name}'
 
 class Category(Model):
+    """
+    Model for listing the categories of the products
+    """
     
-    users = models.ManyToManyField(
-        to = swapper.get_model_name('kernel', 'Student'),
-        blank=True,
-    )
-        
-    main_category = models.CharField(
-        max_length=127,
+    name = models.CharField(
+        max_length = char_max_length,
     )
 
-    name = models.CharField(
-        max_length=127,
-    )
-        
-    code = models.CharField(
-        max_length=127,
-        unique=True,
-    )
+    users = models.ManyToManyField(
+        to = swapper.get_model_name('kernel', 'Person'),
+        blank=True,
+    )    
     
     def __str__(self):
         """
@@ -118,3 +144,24 @@ class Category(Model):
         """
         
         return f'{self.name}'
+        
+
+class SubCategory(Model):
+    """
+    Model for listing the categories of the products
+    """
+    
+    name = models.CharField(
+        max_length = char_max_length,
+    )
+            
+    main_category = models.ForeignKey(
+        to = Category,
+        on_delete = CASCADE,        
+    )    
+
+    users = models.ManyToManyField(
+        to = swapper.get_model_name('kernel', 'Person'),
+        blank=True,
+    )
+y
