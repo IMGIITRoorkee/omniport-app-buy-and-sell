@@ -1,3 +1,4 @@
+import datetime
 import swapper
 
 from django.db import models
@@ -38,7 +39,15 @@ class AbstractProduct(PeriodMixin, Model):
         """
         
         abstract = True
-    
+
+    def save(self, *args, **kwargs):
+        """
+        Set the start date and defer to the save() of the superclass
+        """
+
+        self.start_date = datetime.datetime.now().date()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         """
         Return the string representation of the model
