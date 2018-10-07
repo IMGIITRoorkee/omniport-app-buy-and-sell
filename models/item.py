@@ -6,7 +6,6 @@ from django.db import models
 from kernel.models.root import Model
 from kernel.mixins.period_mixin import PeriodMixin
 
-
 class AbstractProduct(PeriodMixin, Model):
     """
     Abstract model that includes all the basic information neded for a product
@@ -24,7 +23,7 @@ class AbstractProduct(PeriodMixin, Model):
     cost = models.IntegerField()
 
     category = models.ForeignKey(
-        to='Category',
+        to='categories.Category',
         on_delete=models.SET_NULL,
         null=True,
     )

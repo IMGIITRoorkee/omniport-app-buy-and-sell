@@ -8,8 +8,10 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
 
+from categories.models import Category
 from buy_and_sell.models import SaleProduct
-from buy_and_sell.models import Category
+from buy_and_sell.models import Picture
+from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
@@ -64,3 +66,30 @@ class SaleProductViewSet(viewsets.ModelViewSet):
         Pass the request to serializer
         """
         return {'request': self.request}
+    
+    def update(self, request, *args, **kwargs):
+        """
+        Create Picture instance for the product.
+        """
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        pictureFile = request.FILES['picture']
+        picture = PictureSerializer(
+            data={
+                'product':instance.id,
+                'picture':pictureFile
+            }
+        )
+        picture.is_valid(
+            raise_exception=True
+        )
+        picture.save()
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+            partial=partial
+        )
+        serializer.is_valid(
+            raise_exception=True
+        )
+        self.perform_update(serializer)
