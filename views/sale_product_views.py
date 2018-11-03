@@ -1,4 +1,4 @@
-import ipdb
+import datetime
 
 from rest_framework import generics
 from rest_framework import viewsets
@@ -33,7 +33,7 @@ class SaleProductList(generics.ListAPIView):
                 return SaleProduct.objects.filter(person=self.request.person)
             else:
                 try:
-                    parent_category = Category.objects.get(name=request_arg)
+                    parent_category = Category.objects.get(slug=request_arg)
                 except:
                     return SaleProduct.objects.none()
                 
@@ -58,7 +58,9 @@ class SaleProductViewSet(viewsets.ModelViewSet):
         IsAuthenticatedOrReadOnly,
         IsOwnerOrReadOnly,
     )
-    queryset = SaleProduct.objects.all()
+    queryset = SaleProduct.objects.filter(
+        end_date__gte=datetime.date.today()
+    )
     serializer_class = SaleProductSerializer
     
     def get_serializer_context(self):
@@ -71,25 +73,21 @@ class SaleProductViewSet(viewsets.ModelViewSet):
         """
         Create Picture instance for the product.
         """
-        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        pictureFile = request.FILES['picture']
-        picture = PictureSerializer(
-            data={
-                'product':instance.id,
-                'picture':pictureFile
-            }
-        )
-        picture.is_valid(
-            raise_exception=True
-        )
-        picture.save()
-        serializer = self.get_serializer(
-            instance,
-            data=request.data,
-            partial=partial
-        )
-        serializer.is_valid(
-            raise_exception=True
-        )
-        self.perform_update(serializer)
+        if len(instance.picture_set.all())<3:
+            try:
+                pictureFile = request.FILES['picture']
+                picture = PictureSerializer(
+                    data={
+                        'product':instance.id,
+                        'picture':pictureFile
+                    }
+                )
+                picture.is_valid(
+                    raise_exception=True
+                )
+                picture.save()
+                del request.FILES['picture']
+            except KeyError:
+                pass
+        return super().update(request,*args, **kwargs)

@@ -9,7 +9,9 @@ from kernel.serializers.roles.student import StudentSerializer
 from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
 from kernel.serializers.generics.contact_information import ContactInformationSerializer
 
+from categories.models import Category
 from buy_and_sell.models import SaleProduct
+from buy_and_sell.models import PaymentMode
 from buy_and_sell.serializers.payment_mode import PaymentModeSerializer
 from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.categories import CategorySerializer
@@ -21,19 +23,18 @@ class SaleProductSerializer(serializers.ModelSerializer):
     
     pictures = serializers.SerializerMethodField()
     person = serializers.SerializerMethodField()
-    payment_modes = PaymentModeSerializer(
+    payment_modes = serializers.SlugRelatedField(
         many=True,
-        read_only=True,
+        slug_field='name',
+        queryset=PaymentMode.objects.all()
     )
-    category = CategorySerializer(
-        style={
-            'base_template':'fieldset.html',
-        }
+    category = serializers.SlugRelatedField(
+        many=False,
+        queryset = Category.objects.filter(
+            slug__startswith='buy_and_sell_'
+        ),
+        slug_field='slug'
     )
-
-    def get_payment_modes(self, obj):
-        return [PaymentModeSerializer(x) for x in obj.payment_modes]
-
     def get_pictures(self, obj):
         return [x.picture.url for x in obj.picture_set.all()] 
     
