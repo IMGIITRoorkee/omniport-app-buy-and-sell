@@ -4,4 +4,4 @@ nomenclature:
 baseUrls:
   http: buyandsell/
   ws: 
-  isApi: true
+isApi: true

@@ -9,24 +9,15 @@ from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
 from kernel.serializers.generics.contact_information import ContactInformationSerializer
 
 from categories.models import Category
-from buy_and_sell.models import SaleProduct
-from buy_and_sell.models import PaymentMode
-from buy_and_sell.serializers.payment_mode import PaymentModeSerializer
-from buy_and_sell.serializers.picture import PictureSerializer
+from buy_and_sell.models import RequestProduct
 from buy_and_sell.serializers.categories import CategorySerializer
 
-class SaleProductSerializer(serializers.ModelSerializer):
+class RequestProductSerializer(serializers.ModelSerializer):
     """
-    Serializer to serialize the sale product model
+    Serializer to serialize the Request Product model
     """
-    
-    pictures = serializers.SerializerMethodField()
+
     person = serializers.SerializerMethodField()
-    payment_modes = serializers.SlugRelatedField(
-        many=True,
-        slug_field='name',
-        queryset=PaymentMode.objects.all()
-    )
     category = serializers.SlugRelatedField(
         many=False,
         queryset = Category.objects.filter(
@@ -34,9 +25,6 @@ class SaleProductSerializer(serializers.ModelSerializer):
         ),
         slug_field='slug'
     )
-    def get_pictures(self, obj):
-        return [x.picture.url for x in obj.picture_set.all()] 
-    
     def get_person(self, obj):
 
         roles = get_all_roles(obj.person)
@@ -69,16 +57,13 @@ class SaleProductSerializer(serializers.ModelSerializer):
         return person
 
     class Meta:
-        """
-        Details of the fields included in the serializer
-        """
-        model = SaleProduct
-        fields = ('id', 'name', 'cost', 'category', 'datetime_created',
-        'start_date', 'end_date', 'is_phone_visible', 'details',
-        'warranty_detail', 'payment_modes', 'pictures', 'person'
+        
+        model = RequestProduct
+        fields = ('id', 'name', 'category' , 'cost', 'person',
+        'is_phone_visible', 'datetime_created', 'start_date', 'end_date',
         )
-        read_only_fields = ('datetime_created', 'start_date', 'person',)
-    
+        read_only_fields = ('person', 'datetime_created', 'start_date')
+
     def validate_category(self, value):
         """
         Custom validation for the category field
@@ -87,7 +72,7 @@ class SaleProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('NULL value for this field '+
             'is not allowed')
         return value
-    
+
     def validate_end_date(self, value):
         """
         Custom validation for the end_date field
@@ -100,7 +85,6 @@ class SaleProductSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError('End date can not be '+
                 'blank.')
-
 
     def create(self, validated_data):
         """
