@@ -10,6 +10,7 @@ from buy_and_sell.views.sale_product_views import SaleProductViewSet
 from buy_and_sell.views.request_product_views import RequestProductViewSet
 from buy_and_sell.views.payment_mode_views import PaymentModeViewSet
 from buy_and_sell.views.categories import CategoriesViewSet
+from buy_and_sell.views.search_view import GlobalSearchList
 
 app_name = 'buy_and_sell'
 router = DefaultRouter()
@@ -23,6 +24,7 @@ urlpatterns = [
     url(r'^sale(/(?P<argument>my_products)/|/)?$', SaleProductList.as_view()),
     url(r'^request(/(?P<argument>[\w]+)/|/)?$', RequestProductList.as_view()),
     url(r'^request(/(?P<argument>my_products)/|/)?$', RequestProductList.as_view()),
+    url(r'^search/$', GlobalSearchList.as_view(), name="search"),
 ]
 
 urlpatterns += router.urls
