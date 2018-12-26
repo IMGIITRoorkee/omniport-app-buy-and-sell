@@ -18,7 +18,7 @@ class GlobalSearchList(generics.ListAPIView):
         """
         Dynamically set the queryset
         """
-        
+
         try:
             query = self.request.query_params.get('query', None)
             sale_product = SaleProduct.objects.filter(name__icontains=query)
