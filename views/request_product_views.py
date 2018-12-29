@@ -27,7 +27,7 @@ class RequestProductList(generics.ListAPIView):
                 return RequestProduct.objects.filter(person=self.request.person)
             else:
                 try:
-                    parent_category = Category.objects.get(name=request_arg)
+                    parent_category = Category.objects.get(slug=request_arg)
                 except:
                     return RequestProduct.objects.none()
                 
