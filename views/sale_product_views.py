@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from categories.models import Category
 from buy_and_sell.models import SaleProduct
@@ -30,7 +31,10 @@ class SaleProductList(generics.ListAPIView):
         request_arg = self.kwargs['argument']
         if(request_arg):
             if (request_arg == "my_products"):
-                return SaleProduct.objects.filter(person=self.request.person)
+                return SaleProduct.objects.filter(
+                    person=self.request.person,
+                    end_date__gte=datetime.date.today()
+                    ).order_by('-id')
             else:
                 try:
                     parent_category = Category.objects.get(slug=request_arg)
@@ -41,10 +45,13 @@ class SaleProductList(generics.ListAPIView):
                     include_self=True
                 )
                 return SaleProduct.objects.filter(
-                    category__in = decendent_categories
-                )
+                    category__in = decendent_categories,
+                    end_date__gte=datetime.date.today()
+                ).order_by('-id')
         else:
-            return SaleProduct.objects.all()
+            return SaleProduct.objects.filter(
+                end_date__gte=datetime.date.today()
+            ).order_by('-id')
 
 
 class SaleProductViewSet(viewsets.ModelViewSet):
@@ -60,7 +67,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
     )
     queryset = SaleProduct.objects.filter(
         end_date__gte=datetime.date.today()
-    )
+    ).order_by('-id')
     serializer_class = SaleProductSerializer
     
     def get_serializer_context(self):
@@ -68,26 +75,4 @@ class SaleProductViewSet(viewsets.ModelViewSet):
         Pass the request to serializer
         """
         return {'request': self.request}
-    
-    def update(self, request, *args, **kwargs):
-        """
-        Create Picture instance for the product.
-        """
-        instance = self.get_object()
-        if len(instance.picture_set.all())<3:
-            try:
-                pictureFile = request.FILES['picture']
-                picture = PictureSerializer(
-                    data={
-                        'product':instance.id,
-                        'picture':pictureFile
-                    }
-                )
-                picture.is_valid(
-                    raise_exception=True
-                )
-                picture.save()
-                del request.FILES['picture']
-            except KeyError:
-                pass
-        return super().update(request,*args, **kwargs)
+

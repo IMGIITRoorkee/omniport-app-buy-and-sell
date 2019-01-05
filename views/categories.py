@@ -12,6 +12,6 @@ class CategoriesViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Category.objects.filter(
         slug__startswith='buy_and_sell_'
         ).filter(
-            level=1
+            level=2
         )
     serializer_class = CategorySerializer

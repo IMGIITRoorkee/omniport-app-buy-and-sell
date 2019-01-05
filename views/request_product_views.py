@@ -24,7 +24,10 @@ class RequestProductList(generics.ListAPIView):
         request_arg = self.kwargs['argument']
         if(request_arg):
             if (request_arg == "my_products"):
-                return RequestProduct.objects.filter(person=self.request.person)
+                return RequestProduct.objects.filter(
+                    person=self.request.person,
+                    end_date__gte=datetime.date.today()
+                    ).order_by('-id')
             else:
                 try:
                     parent_category = Category.objects.get(slug=request_arg)
@@ -33,12 +36,15 @@ class RequestProductList(generics.ListAPIView):
                 
                 decendent_categories = parent_category.get_descendants(
                     include_self=True
-                )
+                ).order_by('-id')
                 return RequestProduct.objects.filter(
-                    category__in = decendent_categories
-                )
+                    category__in = decendent_categories,
+                    end_date__gte=datetime.date.today()
+                ).order_by('-id')
         else:
-            return RequestProduct.objects.all()
+            return RequestProduct.objects.filter(
+                end_date__gte=datetime.date.today()
+            ).order_by('-id')
 
 
 class RequestProductViewSet(viewsets.ModelViewSet):
@@ -54,7 +60,7 @@ class RequestProductViewSet(viewsets.ModelViewSet):
     
     queryset = RequestProduct.objects.filter(
         end_date__gte=datetime.date.today()
-    )
+    ).order_by('-id')
     serializer_class = RequestProductSerializer
 
     def get_serializer_context(self):
