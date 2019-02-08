@@ -5,6 +5,7 @@ from buy_and_sell.models import RequestProduct
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
 from buy_and_sell.serializers.request_product import RequestProductSerializer
 
+
 class GlobalSearchSerializer(serializers.ModelSerializer):
     """
     Serializer to serialize the search results

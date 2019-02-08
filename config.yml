@@ -1,7 +1,48 @@
 nomenclature:
-  name: buyandsell
-  verboseName: Buyandsell
+  name: buy_and_sell
+  verboseName: Buy and sell
 baseUrls:
-  http: buyandsell/
+  http: buy_and_sell/
+  static: buy_and_sell/
   ws: 
 isApi: true
+acceptables:
+  roles:
+  - name: Student
+    activeStatuses:
+    - IS_ACTIVE
+    - HAS_BEEN_ACTIVE
+categories:
+  - name: Electronics
+    slug: electronics
+    subcategories:
+      - name: Mobiles & Accessories
+        slug: mobile_accessories
+      - name: Computers & Accessories
+        slug: computer_accessories
+      - name: Others
+        slug: electronics_others
+  - name: Books
+    slug: books
+    subcategories:
+      - name: Fiction
+        slug: fiction
+      - name: Non-fiction
+        slug: non_fiction
+      - name: Academic
+        slug: books_academic
+      - name: Others
+        slug: books_others
+  - name: Academic
+    slug: academic
+    subcategories:
+      - name: Drafters
+        slug: drafters
+      - name: Lab coats
+        slug: lab_coats
+      - name: Others
+        slug: academic_others
+  - name: Bicycles
+    slug: bicycles
+  - name: Miscellaneous
+    slug: miscellaneous
