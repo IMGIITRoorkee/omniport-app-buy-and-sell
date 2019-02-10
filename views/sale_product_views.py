@@ -1,5 +1,7 @@
 import datetime
 
+from django.contrib.contenttypes.models import ContentType
+
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import status
@@ -82,6 +84,15 @@ class SaleProductViewSet(viewsets.ModelViewSet):
         bit.app_name = 'buy_and_sell'
         bit.entity = sale_product
         bit.save()
+
+    def perform_destroy(self, instance):
+        item_type = ContentType.objects.get_for_model(instance)
+        bit = Bit.objects.get(
+            entity_content_type__pk=item_type.id,
+            entity_object_id=instance.id
+        )
+        bit.delete()
+        instance.delete()
 
     def get_serializer_context(self):
         """

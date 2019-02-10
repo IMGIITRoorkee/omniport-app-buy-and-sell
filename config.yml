@@ -6,6 +6,7 @@ baseUrls:
   static: buy_and_sell/
   ws: 
 isApi: true
+description: Classifieds, by and for the students
 acceptables:
   roles:
   - name: Student

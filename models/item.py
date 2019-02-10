@@ -106,7 +106,7 @@ class SaleProduct(AbstractProduct):
         :return: the display text for the attached feed item
         """
 
-        return f'{self.person.full_name} added {self.name} for sale.'
+        return f'Added {self.name} for sale.'
 
     @property
     def feed_url(self):
@@ -149,7 +149,7 @@ class RequestProduct(AbstractProduct):
         :return: the display text for the attached feed item
         """
 
-        return f'{self.person.full_name} requested for {self.name}.'
+        return f'Requested for {self.name}.'
 
     @property
     def feed_url(self):
