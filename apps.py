@@ -1,6 +1,3 @@
-from django.apps import AppConfig
+from configuration.utils.app_config_class import get_app_config_class
 
-
-class BuyAndSellConfig(AppConfig):
-    name = 'buy_and_sell'
-    verbose_name = 'Buy and sell'
+Config = get_app_config_class(__file__)
