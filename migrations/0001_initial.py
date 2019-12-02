@@ -4,7 +4,7 @@ from django.conf import settings
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import kernel.utils.upload_to
+import formula_one.utils.upload_to
 
 
 class Migration(migrations.Migration):
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('datetime_created', models.DateTimeField(auto_now_add=True)),
                 ('datetime_modified', models.DateTimeField(auto_now=True)),
-                ('picture', models.ImageField(upload_to=kernel.utils.upload_to.UploadTo('buy_and_sell', 'product_pictures'))),
+                ('picture', models.ImageField(upload_to=formula_one.utils.upload_to.UploadTo('buy_and_sell', 'product_pictures'))),
             ],
             options={
                 'abstract': False,

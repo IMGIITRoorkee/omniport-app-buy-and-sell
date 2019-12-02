@@ -4,9 +4,9 @@ import swapper
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-from kernel.models.root import Model
-from kernel.mixins.period_mixin import PeriodMixin
-from kernel.mixins.report_mixin import ReportMixin
+from formula_one.models.base import Model
+from formula_one.mixins.period_mixin import PeriodMixin
+from formula_one.mixins.report_mixin import ReportMixin
 
 
 class AbstractProduct(PeriodMixin, ReportMixin, Model):

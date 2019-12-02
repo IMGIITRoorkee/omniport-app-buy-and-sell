@@ -3,11 +3,11 @@ from datetime import datetime
 
 from rest_framework import serializers
 
-from kernel.models import ContactInformation
+from formula_one.models import ContactInformation
 from kernel.managers.get_role import get_all_roles
 from kernel.serializers.roles.student import StudentSerializer
 from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
-from kernel.serializers.generics.contact_information import (
+from formula_one.serializers import (
     ContactInformationSerializer,
 )
 

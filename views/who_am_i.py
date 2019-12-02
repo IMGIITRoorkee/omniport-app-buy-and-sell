@@ -5,12 +5,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from kernel.models import ContactInformation
+from formula_one.models import ContactInformation
 from kernel.managers.get_role import get_all_roles
 from kernel.serializers.person import ProfileSerializer
 from kernel.serializers.roles.student import StudentSerializer
 from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
-from kernel.serializers.generics.contact_information import (
+from formula_one.serializers import (
     ContactInformationSerializer,
 )
 

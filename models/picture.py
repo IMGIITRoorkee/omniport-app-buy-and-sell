@@ -2,8 +2,8 @@ import swapper
 
 from django.db import models
 
-from kernel.models.root import Model
-from kernel.utils.upload_to import UploadTo
+from formula_one.models.base import Model
+from formula_one.utils.upload_to import UploadTo
 
 
 class Picture(Model):
