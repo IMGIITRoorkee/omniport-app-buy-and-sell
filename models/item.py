@@ -32,7 +32,7 @@ class AbstractProduct(PeriodMixin, ReportMixin, Model):
 
     category = models.ForeignKey(
         to='categories.Category',
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         null=True,
     )
 
