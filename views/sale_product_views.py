@@ -12,9 +12,12 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from categories.models import Category
+
+from notifications.actions import push_notification
+
 from feed.models import Bit
 
-from buy_and_sell.models import SaleProduct
+from buy_and_sell.models import SaleProduct, RequestProduct
 from buy_and_sell.models import Picture
 from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
@@ -80,10 +83,20 @@ class SaleProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         sale_product = serializer.save()
 
+        corresponding_request_items = RequestProduct.objects.filter(category = sale_product.category)
+        corresponding_persons = corresponding_request_items.values_list('person', flat=True).distinct()
+
         bit = Bit()
         bit.app_name = 'buy_and_sell'
         bit.entity = sale_product
         bit.save()
+
+        # push_notification(
+        #     template = sale_product.name,
+        #     category = sale_product.category,
+        #     has_custom_users_target = True,
+        #     persons = list(corresponding_persons)
+        # )
 
     def perform_destroy(self, instance):
         item_type = ContentType.objects.get_for_model(instance)
