@@ -85,18 +85,18 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
         corresponding_request_items = RequestProduct.objects.filter(category = sale_product.category)
         corresponding_persons = corresponding_request_items.values_list('person', flat=True).distinct()
+        if(corresponding_persons is not None):
+            push_notification(
+                template = sale_product.name,
+                category = sale_product.category,
+                has_custom_users_target = True,
+                persons = list(corresponding_persons)
+            )
 
         bit = Bit()
         bit.app_name = 'buy_and_sell'
         bit.entity = sale_product
         bit.save()
-
-        # push_notification(
-        #     template = sale_product.name,
-        #     category = sale_product.category,
-        #     has_custom_users_target = True,
-        #     persons = list(corresponding_persons)
-        # )
 
     def perform_destroy(self, instance):
         item_type = ContentType.objects.get_for_model(instance)
