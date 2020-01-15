@@ -85,7 +85,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
         corresponding_request_items = RequestProduct.objects.filter(category = sale_product.category)
         corresponding_persons = corresponding_request_items.values_list('person', flat=True).distinct()
-        if(corresponding_persons is not None):
+        if(corresponding_persons.exists()):
             push_notification(
                 template = sale_product.name,
                 category = sale_product.category,
