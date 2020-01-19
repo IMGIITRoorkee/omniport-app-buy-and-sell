@@ -83,9 +83,10 @@ class SaleProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         sale_product = serializer.save()
 
-        corresponding_request_items = RequestProduct.objects.filter(category = sale_product.category)
-        corresponding_persons = corresponding_request_items.values_list('person', flat=True).distinct()
-        if(corresponding_persons.exists()):
+        persons_to_be_notified = RequestProduct.objects.filter(category = sale_product.category).values_list('person', flat=True).distinct()
+        print("out")
+        if persons_to_be_notified.exists():
+            print("in")
             push_notification(
                 template = sale_product.name,
                 category = sale_product.category,
