@@ -1,5 +1,7 @@
 import datetime
 
+import logging
+
 from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import generics
@@ -14,6 +16,7 @@ from rest_framework.response import Response
 from categories.models import Category
 
 from notifications.actions import push_notification
+from emails.actions import email_push
 
 from feed.models import Bit
 
@@ -23,6 +26,7 @@ from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
+logger = logging.getLogger("buy_and_sell")
 
 class SaleProductList(generics.ListAPIView):
     """
@@ -31,7 +35,6 @@ class SaleProductList(generics.ListAPIView):
     """
 
     serializer_class = SaleProductSerializer
-
     def get_queryset(self):
         """
         Dynamically set the queryset
@@ -49,6 +52,7 @@ class SaleProductList(generics.ListAPIView):
                     parent_category = Category.objects.get(slug=request_arg)
                 except Category.DoesNotExist:
                     return SaleProduct.objects.none()
+                    logger.warning('User tried for a category which does not exist')
 
                 sub_categories = parent_category.get_descendants(
                     include_self=True
@@ -82,17 +86,24 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         sale_product = serializer.save()
+        logger.info(f'{sale_product.name} was added for class')
 
         persons_to_be_notified = RequestProduct.objects.filter(category = sale_product.category).values_list('person', flat=True).distinct()
-        print("out")
         if persons_to_be_notified.exists():
-            print("in")
             push_notification(
-                template = sale_product.name,
+                template = f'{sale_product.name} was added for sale',
                 category = sale_product.category,
                 has_custom_users_target = True,
                 persons = list(corresponding_persons)
             )
+            email_push(
+                subject_text = f'{sale_product.name} was added for sale',
+                body_text = f'{sale_product.name} was added for sale',
+                category = sale_product.category,
+                has_custom_users_target = True,
+                persons = list(corresponding_persons)
+            )
+            logger.info(f'A notification and email was pushed to {sale_product.template}')
 
         bit = Bit()
         bit.app_name = 'buy_and_sell'
@@ -107,6 +118,8 @@ class SaleProductViewSet(viewsets.ModelViewSet):
         )
         bit.delete()
         instance.delete()
+
+        logger.info(f'{instance} was deleted')
 
     def get_serializer_context(self):
         """

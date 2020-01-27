@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from categories.models import Category
 
 from notifications.actions import push_notification
+from emails.actions import email_push
 
 from feed.models import Bit
 
@@ -18,6 +19,7 @@ from buy_and_sell.models import RequestProduct, SaleProduct
 from buy_and_sell.serializers.request_product import RequestProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
+logger = logging.getLogger("buy_and_sell")
 
 class RequestProductList(generics.ListAPIView):
     """
@@ -40,6 +42,7 @@ class RequestProductList(generics.ListAPIView):
                     parent_category = Category.objects.get(slug=request_arg)
                 except Category.DoesNotExist:
                     return RequestProduct.objects.none()
+                    logger.warning('User tried for a category which does not exist')
 
                 sub_categories = parent_category.get_descendants(
                     include_self=True
@@ -72,6 +75,7 @@ class RequestProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         request_product = serializer.save()
+        logger.info(f'{request_product.name} was requested')
 
         persons_to_be_notified = SaleProduct.objects.filter(category = request_product.category).values_list('person', flat=True).distinct()
         if(persons_to_be_notified.exists()):
@@ -81,11 +85,20 @@ class RequestProductViewSet(viewsets.ModelViewSet):
                 has_custom_users_target = True,
                 persons = list(corresponding_persons)
             )
-            
+            logger.info(f'A notification and email was pushed to {request_product.name}')
+            email_push(
+                subject_text = f'{request_product.name} was requested',
+                body_text = f'{request_product.name} was requested',
+                category = request_product.category,
+                has_custom_users_target = True,
+                persons = list(corresponding_persons)
+            )
+
         bit = Bit()
         bit.app_name = 'buy_and_sell'
         bit.entity = request_product
         bit.save()
+
 
     def perform_destroy(self, instance):
         item_type = ContentType.objects.get_for_model(instance)
@@ -95,6 +108,8 @@ class RequestProductViewSet(viewsets.ModelViewSet):
         )
         bit.delete()
         instance.delete()
+
+        logger.info(f'{instance} was deleted')
 
     def get_serializer_context(self):
         """
