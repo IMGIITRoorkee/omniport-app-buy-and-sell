@@ -49,7 +49,7 @@ class SaleProductList(generics.ListAPIView):
                 try:
                     parent_category = Category.objects.get(slug=request_arg)
                 except Category.DoesNotExist:
-                    logger.error(f'{self.request.person} tried for a category {Category} which does not exist')
+                    logger.error(f'{self.request.person} tried for a category {Category.name} which does not exist')
                     return SaleProduct.objects.none()
 
                 sub_categories = parent_category.get_descendants(
