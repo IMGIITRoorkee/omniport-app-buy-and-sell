@@ -1,7 +1,5 @@
 import datetime
-
 import logging
-
 from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import generics
@@ -51,8 +49,8 @@ class SaleProductList(generics.ListAPIView):
                 try:
                     parent_category = Category.objects.get(slug=request_arg)
                 except Category.DoesNotExist:
+                    logger.error(f'{self.request.person} tried for a category {Category} which does not exist')
                     return SaleProduct.objects.none()
-                    logger.warning('User tried for a category which does not exist')
 
                 sub_categories = parent_category.get_descendants(
                     include_self=True
@@ -86,7 +84,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         sale_product = serializer.save()
-        logger.info(f'{sale_product.name} was added for class')
+        logger.info(f'{sale_product.name} was added for sale by {self.request.person}')
 
         persons_to_be_notified = RequestProduct.objects.filter(category = sale_product.category).values_list('person', flat=True).distinct()
         if persons_to_be_notified.exists():
@@ -103,7 +101,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
                 has_custom_users_target = True,
                 persons = list(corresponding_persons)
             )
-            logger.info(f'A notification and email was pushed to {sale_product.template}')
+            logger.info(f'Notifications and emails were pushed to {sale_product.template} for {sale_product.category}')
 
         bit = Bit()
         bit.app_name = 'buy_and_sell'
@@ -112,14 +110,13 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         item_type = ContentType.objects.get_for_model(instance)
+        logger.info(f'{instance} was deleted by {self.request.person}')
         bit = Bit.objects.get(
             entity_content_type__pk=item_type.id,
             entity_object_id=instance.id
         )
         bit.delete()
         instance.delete()
-
-        logger.info(f'{instance} was deleted')
 
     def get_serializer_context(self):
         """
