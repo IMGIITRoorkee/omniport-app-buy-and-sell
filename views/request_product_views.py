@@ -95,7 +95,7 @@ class RequestProductViewSet(viewsets.ModelViewSet):
                 has_custom_users_target = True,
                 persons = list(corresponding_persons)
             )
-           logger.info(
+            logger.info(
                 f'{self.request.person} requested a product. '
                 f'Notifications and emails were dispatched for '
                 f'{sale_product.category}'
