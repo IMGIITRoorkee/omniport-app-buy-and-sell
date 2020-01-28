@@ -41,7 +41,10 @@ class RequestProductList(generics.ListAPIView):
                 try:
                     parent_category = Category.objects.get(slug=request_arg)
                 except Category.DoesNotExist:
-                    logger.error(f'{self.request.person} tried for a category {Category.name} which does not exist')
+                    logger.error(
+                        f'{self.request.person} requested a product but the parent'
+                        f' category with slug \'{request_arg}\' does not exist '
+                        )
                     return RequestProduct.objects.none()
 
                 sub_categories = parent_category.get_descendants(
@@ -92,7 +95,11 @@ class RequestProductViewSet(viewsets.ModelViewSet):
                 has_custom_users_target = True,
                 persons = list(corresponding_persons)
             )
-            logger.info(f'Notifications and emails were pushed to {sale_product.template} for {sale_product.category}')
+           logger.info(
+                f'{self.request.person} requested a product. '
+                f'Notifications and emails were dispatched for '
+                f'{sale_product.category}'
+                 )
 
         bit = Bit()
         bit.app_name = 'buy_and_sell'
