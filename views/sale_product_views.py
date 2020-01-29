@@ -95,14 +95,14 @@ class SaleProductViewSet(viewsets.ModelViewSet):
                 template = f'{sale_product.name} was added for sale',
                 category = sale_product.category,
                 has_custom_users_target = True,
-                persons = list(corresponding_persons)
+                persons = list(persons_to_be_notified)
             )
             email_push(
                 subject_text = f'{sale_product.name} was added for sale',
                 body_text = f'{sale_product.name} was added for sale',
                 category = sale_product.category,
-                has_custom_users_target = True,
-                persons = list(corresponding_persons)
+                has_custom_user_target = True,
+                persons = list(persons_to_be_notified)
             )
             logger.info(
                 f'{self.request.person} put a product to sale. '

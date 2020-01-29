@@ -79,26 +79,26 @@ class RequestProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         request_product = serializer.save()
-        logger.info(f'{sale_product.name} was added for request by {self.request.person}')
+        logger.info(f'{request_product.name} was added for request by {self.request.person}')
         persons_to_be_notified = SaleProduct.objects.filter(category = request_product.category).values_list('person', flat=True).distinct()
         if(persons_to_be_notified.exists()):
             push_notification(
                 template = request_product.name,
                 category = request_product.category,
                 has_custom_users_target = True,
-                persons = list(corresponding_persons)
+                persons = list(persons_to_be_notified)
             )
             email_push(
                 subject_text = f'{request_product.name} was requested',
                 body_text = f'{request_product.name} was requested',
                 category = request_product.category,
-                has_custom_users_target = True,
-                persons = list(corresponding_persons)
+                has_custom_user_target = True,
+                persons = list(persons_to_be_notified)
             )
             logger.info(
                 f'{self.request.person} requested a product. '
                 f'Notifications and emails were dispatched for '
-                f'{sale_product.category}'
+                f'{request_product.category}'
             )
 
         bit = Bit()
