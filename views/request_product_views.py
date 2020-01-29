@@ -19,6 +19,7 @@ from buy_and_sell.models import RequestProduct, SaleProduct
 from buy_and_sell.serializers.request_product import RequestProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
+
 logger = logging.getLogger("buy_and_sell")
 
 class RequestProductList(generics.ListAPIView):
@@ -99,7 +100,7 @@ class RequestProductViewSet(viewsets.ModelViewSet):
                 f'{self.request.person} requested a product. '
                 f'Notifications and emails were dispatched for '
                 f'{sale_product.category}'
-                 )
+            )
 
         bit = Bit()
         bit.app_name = 'buy_and_sell'
