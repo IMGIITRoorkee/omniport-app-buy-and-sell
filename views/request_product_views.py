@@ -19,8 +19,8 @@ from buy_and_sell.models import RequestProduct, SaleProduct
 from buy_and_sell.serializers.request_product import RequestProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
-
 logger = logging.getLogger("buy_and_sell")
+
 
 class RequestProductList(generics.ListAPIView):
     """

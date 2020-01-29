@@ -24,8 +24,8 @@ from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
-
 logger = logging.getLogger("buy_and_sell")
+
 
 class SaleProductList(generics.ListAPIView):
     """
