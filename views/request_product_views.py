@@ -45,7 +45,7 @@ class RequestProductList(generics.ListAPIView):
                     logger.error(
                         f'{self.request.person} requested a product but the parent'
                         f' category with slug \'{request_arg}\' does not exist '
-                        )
+                    )
                     return RequestProduct.objects.none()
 
                 sub_categories = parent_category.get_descendants(

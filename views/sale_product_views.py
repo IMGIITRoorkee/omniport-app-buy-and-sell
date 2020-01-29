@@ -53,7 +53,7 @@ class SaleProductList(generics.ListAPIView):
                     logger.error(
                         f'{self.request.person} put a product to sale but the parent'
                         f' category with slug \'{request_arg}\' does not exist '
-                        )
+                    )
                     return SaleProduct.objects.none()
 
                 sub_categories = parent_category.get_descendants(
