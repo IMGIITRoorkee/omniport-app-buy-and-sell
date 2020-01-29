@@ -80,7 +80,6 @@ class RequestProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         request_product = serializer.save()
         logger.info(f'{sale_product.name} was added for request by {self.request.person}')
-
         persons_to_be_notified = SaleProduct.objects.filter(category = request_product.category).values_list('person', flat=True).distinct()
         if(persons_to_be_notified.exists()):
             push_notification(
@@ -106,7 +105,6 @@ class RequestProductViewSet(viewsets.ModelViewSet):
         bit.app_name = 'buy_and_sell'
         bit.entity = request_product
         bit.save()
-
 
     def perform_destroy(self, instance):
         item_type = ContentType.objects.get_for_model(instance)
