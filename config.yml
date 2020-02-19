@@ -1,6 +1,6 @@
 nomenclature:
   name: buy_and_sell
-  verboseName: Buy and sell
+  verboseName: Buy & Sell
 baseUrls:
   http: buy_and_sell/
   static: buy_and_sell/
