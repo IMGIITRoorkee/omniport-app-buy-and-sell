@@ -19,22 +19,22 @@ router = SimpleRouter()
 router.register(
     r'sale_product',
     SaleProductViewSet,
-    base_name='sale_product'
+    basename='sale_product'
 )
 router.register(
     r'request_product',
     RequestProductViewSet,
-    base_name='request_product'
+    basename='request_product'
 )
 router.register(
     r'payment',
     PaymentModeViewSet,
-    base_name='payment_modes'
+    basename='payment_modes'
 )
 router.register(
     r'categories',
     CategoriesViewSet,
-    base_name='categories'
+    basename='categories'
 )
 
 urlpatterns = [
