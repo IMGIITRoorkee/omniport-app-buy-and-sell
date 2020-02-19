@@ -98,8 +98,11 @@ class SaleProductViewSet(viewsets.ModelViewSet):
                 persons = list(persons_to_be_notified)
             )
             email_push(
-                subject_text = f'{sale_product.name} was added for sale',
-                body_text = f'{sale_product.name} was added for sale',
+                subject_text = f'The item ,{sale_product.name}, requested by you has a prospective seller on Buy and Sell!',
+                body_text = f'{sale_product.name} was added for sale by {sale_product.person.full_name}.'
+                            f' You can contact them by mailing them at { sale_product.person.contact_information.first().email_address}.'
+                            f'\n\n Note: If the  phone number or email id of the seller is missing, that means that { sale_product.person.full_name } '
+                            f' has not filled in their contact information in the channel-i database ',
                 category = sale_product.category,
                 has_custom_user_target = True,
                 persons = list(persons_to_be_notified)
