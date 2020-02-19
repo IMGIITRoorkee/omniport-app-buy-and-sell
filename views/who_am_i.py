@@ -10,7 +10,7 @@ from kernel.managers.get_role import get_all_roles
 from kernel.serializers.person import ProfileSerializer
 from kernel.serializers.roles.student import StudentSerializer
 from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
-from formula_one.serializers import (
+from formula_one.serializers.generics.contact_information import (
     ContactInformationSerializer,
 )
 

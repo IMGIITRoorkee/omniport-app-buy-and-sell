@@ -1,5 +1,5 @@
 import datetime
-
+import logging
 from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import generics
@@ -12,13 +12,19 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from categories.models import Category
+
+from notifications.actions import push_notification
+from emails.actions import email_push
+
 from feed.models import Bit
 
-from buy_and_sell.models import SaleProduct
+from buy_and_sell.models import SaleProduct, RequestProduct
 from buy_and_sell.models import Picture
 from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
+
+logger = logging.getLogger("buy_and_sell")
 
 
 class SaleProductList(generics.ListAPIView):
@@ -28,7 +34,6 @@ class SaleProductList(generics.ListAPIView):
     """
 
     serializer_class = SaleProductSerializer
-
     def get_queryset(self):
         """
         Dynamically set the queryset
@@ -45,6 +50,10 @@ class SaleProductList(generics.ListAPIView):
                 try:
                     parent_category = Category.objects.get(slug=request_arg)
                 except Category.DoesNotExist:
+                    logger.error(
+                        f'{self.request.person} put a product to sale but the parent'
+                        f' category with slug \'{request_arg}\' does not exist '
+                    )
                     return SaleProduct.objects.none()
 
                 sub_categories = parent_category.get_descendants(
@@ -79,6 +88,27 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         sale_product = serializer.save()
+        logger.info(f'{sale_product.name} was added for sale by {self.request.person}')
+        persons_to_be_notified = RequestProduct.objects.filter(category = sale_product.category).values_list('person', flat=True).distinct()
+        if persons_to_be_notified.exists():
+            push_notification(
+                template = f'{sale_product.name} was added for sale',
+                category = sale_product.category,
+                has_custom_users_target = True,
+                persons = list(persons_to_be_notified)
+            )
+            email_push(
+                subject_text = f'{sale_product.name} was added for sale',
+                body_text = f'{sale_product.name} was added for sale',
+                category = sale_product.category,
+                has_custom_user_target = True,
+                persons = list(persons_to_be_notified)
+            )
+            logger.info(
+                f'{self.request.person} put a product to sale. '
+                f'Notifications and emails were dispatched for '
+                f'{sale_product.category}'
+            )
 
         bit = Bit()
         bit.app_name = 'buy_and_sell'
@@ -87,6 +117,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         item_type = ContentType.objects.get_for_model(instance)
+        logger.info(f'{instance} was deleted by {self.request.person}')
         bit = Bit.objects.get(
             entity_content_type__pk=item_type.id,
             entity_object_id=instance.id
