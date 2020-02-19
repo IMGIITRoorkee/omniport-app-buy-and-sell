@@ -31,7 +31,7 @@ class RequestProductList(generics.ListAPIView):
 
     def get_queryset(self):
 
-        request_arg = self.kwargs['argument']
+        request_arg = self.kwargs.get('argument', '')
         if(request_arg):
             if request_arg == "my_products":
                 return RequestProduct.objects.filter(

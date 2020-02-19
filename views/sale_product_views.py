@@ -39,7 +39,7 @@ class SaleProductList(generics.ListAPIView):
         Dynamically set the queryset
         """
 
-        request_arg = self.kwargs['argument']
+        request_arg = self.kwargs.get('argument', '')
         if(request_arg):
             if (request_arg == "my_products"):
                 return SaleProduct.objects.filter(
@@ -98,7 +98,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
                 persons = list(persons_to_be_notified)
             )
             email_push(
-                subject_text = f'The item ,{sale_product.name}, requested by you has a prospective seller on Buy and Sell!',
+                subject_text = f'The item, {sale_product.name}, requested by you has a prospective seller on Buy and Sell!',
                 body_text = f'{sale_product.name} was added for sale by {sale_product.person.full_name}.'
                             f' You can contact them by mailing them at { sale_product.person.contact_information.first().email_address}.'
                             f'\n\n Note: If the  phone number or email id of the seller is missing, that means that { sale_product.person.full_name } '
