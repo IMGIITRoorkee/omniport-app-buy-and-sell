@@ -83,14 +83,17 @@ class RequestProductViewSet(viewsets.ModelViewSet):
         persons_to_be_notified = SaleProduct.objects.filter(category = request_product.category).values_list('person', flat=True).distinct()
         if(persons_to_be_notified.exists()):
             push_notification(
-                template = request_product.name,
+                template = f'{request_product.name} was requested',
                 category = request_product.category,
                 has_custom_users_target = True,
                 persons = list(persons_to_be_notified)
             )
             email_push(
-                subject_text = f'{request_product.name} was requested',
-                body_text = f'{request_product.name} was requested',
+                subject_text = f'Your item {request_product.name} has a prospective seller on Buy and Sell!',
+                body_text = f'{ request_product.person.full_name } has added the item that you requested for on Buy and Sell.'+
+                            f'You can contact them by mailing them at { request_product.person.contact_information.first().email_address }'+
+                            f'\n\n Note: If the  phone number or email id of the seller is missing, that means that { request_product.person.full_name }'
+                            f' has not filled in their contact information in the channel-i database ',
                 category = request_product.category,
                 has_custom_user_target = True,
                 persons = list(persons_to_be_notified)
