@@ -4,6 +4,8 @@ import swapper
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from kernel.managers.get_role import get_role
+
 from formula_one.models.base import Model
 from formula_one.mixins.period_mixin import PeriodMixin
 from formula_one.mixins.report_mixin import ReportMixin
@@ -130,6 +132,33 @@ class SaleProduct(AbstractProduct):
             picture_url = picture[0].picture.url
         return picture_url
 
+    def has_reported(self, person):
+        """
+        Return whether the person has reported the object or not
+        :param person: the person whose report status is being checked
+        :return: True if the person has reported the object, False otherwise
+        """
+
+        if person in self.reporters.all():
+            return True
+        return False
+
+    def toggle_report(self, person):
+        """
+        Toggle the report status of the given object for the given person
+        :param person: the person toggling his report against the object
+        """
+
+        reported = False
+        if person in self.reporters.all():
+            self.reporters.remove(person)
+        else:
+            reported = True
+            self.reporters.add(person)
+        self.save()
+        if reported:
+            if get_role(person, "Maintainer", silent=True):
+                self.delete()
 
 class RequestProduct(AbstractProduct):
     """
@@ -168,3 +197,32 @@ class RequestProduct(AbstractProduct):
         """
 
         return None
+
+    def has_reported(self, person):
+        """
+        Return whether the person has reported the object or not
+        :param person: the person whose report status is being checked
+        :return: True if the person has reported the object, False otherwise
+        """
+
+        if person in self.reporters.all():
+            return True
+        return False
+
+    def toggle_report(self, person):
+        """
+        Toggle the report status of the given object for the given person
+        :param person: the person toggling his report against the object
+        """
+
+        reported = False
+        if person in self.reporters.all():
+            self.reporters.remove(person)
+        else:
+            reported = True
+            self.reporters.add(person)
+        self.save()
+        if reported:
+            if get_role(person, "Maintainer", silent=True):
+                self.delete()
+
