@@ -86,7 +86,8 @@ class RequestProductViewSet(viewsets.ModelViewSet):
                 template = f'{request_product.name} was requested',
                 category = request_product.category,
                 has_custom_users_target = True,
-                persons = list(persons_to_be_notified)
+                persons = list(persons_to_be_notified),
+                send_only_to_subscribed_users = True
             )
             email_push(
                 subject_text = f'Your item {request_product.name} has a prospective seller on Buy and Sell!',
@@ -96,7 +97,8 @@ class RequestProductViewSet(viewsets.ModelViewSet):
                             f' has not filled in their contact information in the channel-i database ',
                 category = request_product.category,
                 has_custom_user_target = True,
-                persons = list(persons_to_be_notified)
+                persons = list(persons_to_be_notified),
+                send_only_to_subscribed_users = True
             )
             logger.info(
                 f'{self.request.person} requested a product. '
