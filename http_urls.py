@@ -1,5 +1,4 @@
-from django.urls import path
-from django.conf.urls import url
+from django.urls import path, re_path
 
 from rest_framework.routers import SimpleRouter
 
@@ -38,12 +37,12 @@ router.register(
 )
 
 urlpatterns = [
-    url(r'^sale(/(?P<argument>[\w]+)/|/)?$', SaleProductList.as_view()),
-    url(r'^sale(/(?P<argument>my_products)/|/)?$', SaleProductList.as_view()),
-    url(r'^request(/(?P<argument>[\w]+)/|/)?$', RequestProductList.as_view()),
-    url(r'^request(/(?P<argument>my_products)/|/)?$',
+    re_path(r'^sale(/(?P<argument>[\w]+)/|/)?$', SaleProductList.as_view()),
+    re_path(r'^sale(/(?P<argument>my_products)/|/)?$', SaleProductList.as_view()),
+    re_path(r'^request(/(?P<argument>[\w]+)/|/)?$', RequestProductList.as_view()),
+    re_path(r'^request(/(?P<argument>my_products)/|/)?$',
         RequestProductList.as_view()),
-    url(r'^search/$', GlobalSearchList.as_view(), name="search"),
+    re_path(r'^search/$', GlobalSearchList.as_view(), name="search"),
     path('who_am_i/', WhoAmI.as_view(), name='who_am_i'),
     path('picture/', PictureList.as_view(), name='product_picture'),
 ]
