@@ -40,6 +40,8 @@ class SaleProductList(generics.ListAPIView):
         """
 
         request_arg = self.kwargs.get('argument', '')
+        filter_arg = self.kwargs.get('filter_slug', '')
+
         if(request_arg):
             if (request_arg == "my_products"):
                 return SaleProduct.objects.filter(
@@ -59,11 +61,39 @@ class SaleProductList(generics.ListAPIView):
                 sub_categories = parent_category.get_descendants(
                     include_self=True
                 )
+
+                if(filter_arg=="for_rent"):
+                    return SaleProduct.objects.filter(
+                        category__in=sub_categories,
+                        end_date__gte=datetime.date.today(),
+                        is_rental=True,
+                    ).order_by('-id')
+
+                elif( filter_arg=="for_sale"):
+                    return SaleProduct.objects.filter(
+                        category__in=sub_categories,
+                        end_date__gte=datetime.date.today(),
+                        is_rental=False,
+                    ).order_by('-id')
+
                 return SaleProduct.objects.filter(
                     category__in=sub_categories,
-                    end_date__gte=datetime.date.today()
+                    end_date__gte=datetime.date.today(),
                 ).order_by('-id')
+                
         else:
+            if(filter_arg=="for_rent"):
+                return SaleProduct.objects.filter(
+                    end_date__gte=datetime.date.today(),
+                    is_rental=True,
+                ).order_by('-id')
+            
+            elif(filter_arg=="for_sale"):
+                return SaleProduct.objects.filter(
+                    end_date__gte=datetime.date.today(),
+                    is_rental=False,
+                ).order_by('-id')
+            
             return SaleProduct.objects.filter(
                 end_date__gte=datetime.date.today()
             ).order_by('-id')

@@ -3,6 +3,7 @@ from django.urls import path, re_path
 from rest_framework.routers import SimpleRouter
 
 from buy_and_sell.views.sale_product_views import SaleProductList
+from buy_and_sell.views.constants import ConstantViewSet
 from buy_and_sell.views.sale_product_views import SaleProductViewSet
 from buy_and_sell.views.request_product_views import RequestProductList
 from buy_and_sell.views.request_product_views import RequestProductViewSet
@@ -35,9 +36,14 @@ router.register(
     CategoriesViewSet,
     basename='categories'
 )
+router.register(
+    r"constants", 
+    ConstantViewSet, 
+    basename="constant",
+)
 
 urlpatterns = [
-    re_path(r'^sale(/(?P<argument>[\w]+)/|/)?$', SaleProductList.as_view()),
+    re_path(r'^sale/category((?P<argument>[\w]+)/|/)filter(?P<filter_slug>[\w]+)?$', SaleProductList.as_view()),
     re_path(r'^sale(/(?P<argument>my_products)/|/)?$', SaleProductList.as_view()),
     re_path(r'^request(/(?P<argument>[\w]+)/|/)?$', RequestProductList.as_view()),
     re_path(r'^request(/(?P<argument>my_products)/|/)?$',

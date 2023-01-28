@@ -1,3 +1,4 @@
+import datetime
 from itertools import chain
 
 from rest_framework import generics
@@ -21,10 +22,12 @@ class GlobalSearchList(generics.ListAPIView):
 
         query = self.request.query_params.get('query', '')
         sale_product = SaleProduct.objects.filter(
-            name__icontains=query
+            name__icontains=query,
+            end_date__gte=datetime.date.today()
         )
         request_product = RequestProduct.objects.filter(
-            name__icontains=query
+            name__icontains=query,
+            end_date__gte=datetime.date.today()
         )
         all_results = list(chain(sale_product, request_product))
         all_results.sort(key=lambda product: product.datetime_created)

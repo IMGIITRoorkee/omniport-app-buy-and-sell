@@ -10,7 +10,7 @@ from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
 from formula_one.serializers.generics.contact_information import (
     ContactInformationSerializer,
 )
-
+from buy_and_sell.constants import LIFESPAN
 from categories.models import Category
 from buy_and_sell.models import SaleProduct
 from buy_and_sell.models import PaymentMode
@@ -69,7 +69,8 @@ class SaleProductSerializer(serializers.ModelSerializer):
             contact_information.pop('primary_phone_number')
             contact_information.pop('secondary_phone_number')
 
-        person['person']['contact_information'] = contact_information
+        if person:
+            person['person']['contact_information'] = contact_information
 
         return person
 
@@ -80,8 +81,9 @@ class SaleProductSerializer(serializers.ModelSerializer):
 
         model = SaleProduct
         fields = ('id', 'name', 'cost', 'category', 'datetime_created',
-                  'start_date', 'end_date', 'is_phone_visible', 'details',
-                  'warranty_detail', 'payment_modes', 'pictures', 'person'
+                  'start_date', 'end_date', 'is_phone_visible', 'is_rental', 'details',
+                  'warranty_detail', 'payment_modes', 'pictures', 'person', 
+                  'security_deposit', 'periodicity',
                   )
         read_only_fields = ('datetime_created', 'start_date', 'person',)
 
@@ -110,6 +112,26 @@ class SaleProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('End date can not be ' +
                                               'blank.')
 
+    def validate(self, data):
+        if data['is_rental'] is False:
+            if data['security_deposit']>0:
+                raise serializers.ValidationError('Sale product cannot have' +
+                                                 ' a security deposit.')
+            if data['periodicity'] is not LIFESPAN:
+                raise serializers.ValidationError('Invalid periodicity for Sale' +
+                                                 ' product.')
+        else:
+            if data['periodicity'] is LIFESPAN:
+                raise serializers.ValidationError('Invalid periodicity for Rental' +
+                                                 ' product.')
+        
+        if data['security_deposit']<0:
+            raise serializers.ValidationError('Security deposit cannot' +
+                                                 ' be negative.')
+
+        return data
+
+            
     def create(self, validated_data):
         """
         Create model instance with person from request.
