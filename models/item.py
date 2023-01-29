@@ -133,6 +133,8 @@ class SaleProduct(AbstractProduct):
         Return the display text for the attached feed item
         :return: the display text for the attached feed item
         """
+        if self.is_rental :
+            return f'Added {self.name} for rent.'
 
         return f'Added {self.name} for sale.'
 
