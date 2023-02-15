@@ -1,6 +1,7 @@
 """
 The type of periodicity
 """
+
 DAILY = "day"
 WEEKLY = "week"
 MONTHLY = "month"

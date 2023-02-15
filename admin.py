@@ -1,5 +1,4 @@
 from omniport.admin.site import omnipotence
-
 from buy_and_sell.models import (
     SaleProduct,
     RequestProduct,

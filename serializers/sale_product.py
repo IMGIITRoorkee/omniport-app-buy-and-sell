@@ -14,9 +14,6 @@ from buy_and_sell.constants import LIFESPAN
 from categories.models import Category
 from buy_and_sell.models import SaleProduct
 from buy_and_sell.models import PaymentMode
-from buy_and_sell.serializers.payment_mode import PaymentModeSerializer
-from buy_and_sell.serializers.picture import PictureSerializer
-from buy_and_sell.serializers.categories import CategorySerializer
 
 
 class SaleProductSerializer(serializers.ModelSerializer):

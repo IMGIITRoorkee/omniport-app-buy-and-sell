@@ -1,7 +1,5 @@
 from django.urls import path, re_path
-
 from rest_framework.routers import SimpleRouter
-
 from buy_and_sell.views.sale_product_views import SaleProductList
 from buy_and_sell.views.constants import ConstantViewSet
 from buy_and_sell.views.sale_product_views import SaleProductViewSet

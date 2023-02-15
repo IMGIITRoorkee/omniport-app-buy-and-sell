@@ -1,8 +1,6 @@
 import datetime
 from itertools import chain
-
 from rest_framework import generics
-
 from buy_and_sell.models import SaleProduct
 from buy_and_sell.models import RequestProduct
 from buy_and_sell.serializers.search import GlobalSearchSerializer
@@ -32,3 +30,4 @@ class GlobalSearchList(generics.ListAPIView):
         all_results = list(chain(sale_product, request_product))
         all_results.sort(key=lambda product: product.datetime_created)
         return all_results
+
