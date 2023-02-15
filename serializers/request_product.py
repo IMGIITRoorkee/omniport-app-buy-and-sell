@@ -14,7 +14,7 @@ from buy_and_sell.constants import LIFESPAN
 from categories.models import Category
 
 from buy_and_sell.models import RequestProduct
-from buy_and_sell.serializers.categories import CategorySerializer
+
 
 
 class RequestProductSerializer(serializers.ModelSerializer):

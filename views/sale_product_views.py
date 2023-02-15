@@ -8,8 +8,6 @@ from rest_framework import status
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 from categories.models import Category
 
@@ -19,8 +17,6 @@ from emails.actions import email_push
 from feed.models import Bit
 
 from buy_and_sell.models import SaleProduct, RequestProduct
-from buy_and_sell.models import Picture
-from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
