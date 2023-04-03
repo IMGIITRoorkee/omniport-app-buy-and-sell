@@ -1,10 +1,8 @@
 from itertools import chain
-
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from formula_one.models import ContactInformation
 from kernel.managers.get_role import get_all_roles
 from kernel.serializers.person import ProfileSerializer
@@ -13,7 +11,6 @@ from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
 from formula_one.serializers.generics.contact_information import (
     ContactInformationSerializer,
 )
-
 from buy_and_sell.models import SaleProduct, RequestProduct
 
 
@@ -90,3 +87,5 @@ class WhoAmI(GenericAPIView):
         return Response(data={
             'phone_status': 'phone status successfully changed.'
         }, status=status.HTTP_200_OK)
+
+        

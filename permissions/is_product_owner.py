@@ -1,5 +1,3 @@
-from rest_framework import permissions
-
 from buy_and_sell.models import SaleProduct
 
 

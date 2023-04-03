@@ -10,11 +10,11 @@ from kernel.serializers.roles.faculty_member import FacultyMemberSerializer
 from formula_one.serializers.generics.contact_information import (
     ContactInformationSerializer,
 )
-
+from buy_and_sell.constants import LIFESPAN
 from categories.models import Category
 
 from buy_and_sell.models import RequestProduct
-from buy_and_sell.serializers.categories import CategorySerializer
+
 
 
 class RequestProductSerializer(serializers.ModelSerializer):
@@ -66,8 +66,8 @@ class RequestProductSerializer(serializers.ModelSerializer):
 
         model = RequestProduct
         fields = ('id', 'name', 'category', 'cost', 'person',
-                  'is_phone_visible', 'datetime_created',
-                  'start_date', 'end_date',
+                  'is_phone_visible', 'datetime_created', 'is_rental', 
+                  'periodicity', 'start_date', 'end_date',
                   )
         read_only_fields = ('person', 'datetime_created', 'start_date')
 
@@ -94,6 +94,18 @@ class RequestProductSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError('End date can not be ' +
                                               'blank.')
+
+    def validate(self, data):
+        if data['is_rental'] is False:
+            if data['periodicity'] is not LIFESPAN:
+                raise serializers.ValidationError('Invalid periodicity for Sale' +
+                                                 ' product.')
+        else:
+            if data['periodicity'] is LIFESPAN:
+                raise serializers.ValidationError('Invalid periodicity for Rental' +
+                                                 ' product.')
+        
+        return data
 
     def create(self, validated_data):
         """

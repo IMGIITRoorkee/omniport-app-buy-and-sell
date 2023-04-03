@@ -8,8 +8,6 @@ from rest_framework import status
 
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 from categories.models import Category
 
@@ -19,8 +17,6 @@ from emails.actions import email_push
 from feed.models import Bit
 
 from buy_and_sell.models import SaleProduct, RequestProduct
-from buy_and_sell.models import Picture
-from buy_and_sell.serializers.picture import PictureSerializer
 from buy_and_sell.serializers.sale_product import SaleProductSerializer
 from buy_and_sell.permissions.is_owner_or_read_only import IsOwnerOrReadOnly
 
@@ -40,6 +36,8 @@ class SaleProductList(generics.ListAPIView):
         """
 
         request_arg = self.kwargs.get('argument', '')
+        filter_arg = self.kwargs.get('filter_slug', '')
+
         if(request_arg):
             if (request_arg == "my_products"):
                 return SaleProduct.objects.filter(
@@ -59,11 +57,39 @@ class SaleProductList(generics.ListAPIView):
                 sub_categories = parent_category.get_descendants(
                     include_self=True
                 )
+
+                if(filter_arg=="for_rent"):
+                    return SaleProduct.objects.filter(
+                        category__in=sub_categories,
+                        end_date__gte=datetime.date.today(),
+                        is_rental=True,
+                    ).order_by('-id')
+
+                elif( filter_arg=="for_sale"):
+                    return SaleProduct.objects.filter(
+                        category__in=sub_categories,
+                        end_date__gte=datetime.date.today(),
+                        is_rental=False,
+                    ).order_by('-id')
+
                 return SaleProduct.objects.filter(
                     category__in=sub_categories,
-                    end_date__gte=datetime.date.today()
+                    end_date__gte=datetime.date.today(),
                 ).order_by('-id')
+                
         else:
+            if(filter_arg=="for_rent"):
+                return SaleProduct.objects.filter(
+                    end_date__gte=datetime.date.today(),
+                    is_rental=True,
+                ).order_by('-id')
+            
+            elif(filter_arg=="for_sale"):
+                return SaleProduct.objects.filter(
+                    end_date__gte=datetime.date.today(),
+                    is_rental=False,
+                ).order_by('-id')
+            
             return SaleProduct.objects.filter(
                 end_date__gte=datetime.date.today()
             ).order_by('-id')
@@ -88,11 +114,16 @@ class SaleProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         sale_product = serializer.save()
-        logger.info(f'{sale_product.name} was added for sale by {self.request.person}')
+        if sale_product.is_rental:
+            product_type = 'rent'
+        else:
+            product_type = 'sale'
+        
+        logger.info(f'{sale_product.name} was added for {product_type} by {self.request.person}')
         persons_to_be_notified = RequestProduct.objects.filter(category = sale_product.category).values_list('person', flat=True).distinct()
         if persons_to_be_notified.exists():
             push_notification(
-                template = f'{sale_product.name} was added for sale',
+                template = f'{sale_product.name} was added for {product_type}',
                 category = sale_product.category,
                 has_custom_users_target = True,
                 persons = list(persons_to_be_notified),
@@ -100,7 +131,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
             )
             email_push(
                 subject_text = f'The item, {sale_product.name}, requested by you has a prospective seller on Buy and Sell!',
-                body_text = f'{sale_product.name} was added for sale by {sale_product.person.full_name}.'
+                body_text = f'{sale_product.name} was added for {product_type} by {sale_product.person.full_name}.'
                             f' You can contact them by mailing them at { sale_product.person.contact_information.first().email_address}.'
                             f'\n\n Note: If the  phone number or email id of the seller is missing, that means that { sale_product.person.full_name } '
                             f' has not filled in their contact information in the channel-i database ',
@@ -110,7 +141,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
                 send_only_to_subscribed_users = True
             )
             logger.info(
-                f'{self.request.person} put a product to sale. '
+                f'{self.request.person} put a product to {product_type}. '
                 f'Notifications and emails were dispatched for '
                 f'{sale_product.category}'
             )

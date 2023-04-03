@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication
+
 from rest_framework.response import Response
 
 from buy_and_sell.permissions.is_product_owner import has_product_permission
