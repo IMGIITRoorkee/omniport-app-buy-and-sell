@@ -2,7 +2,7 @@ from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from buy_and_sell import constants
-
+from buy_and_sell.serializers.constants import ConstantSerializer
 
 class ConstantViewSet(
     mixins.ListModelMixin,
@@ -12,6 +12,7 @@ class ConstantViewSet(
     List view for constants and their codes
     """
     renderer_classes = [JSONRenderer,]
+    serializer_class = ConstantSerializer
 
     def list(self, request):
         """

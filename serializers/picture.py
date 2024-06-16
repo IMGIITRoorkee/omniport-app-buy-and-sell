@@ -11,3 +11,4 @@ class PictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Picture
         fields = '__all__'
+        ref_name="picture_serializer"
