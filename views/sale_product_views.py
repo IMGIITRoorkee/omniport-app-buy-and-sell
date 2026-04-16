@@ -7,6 +7,7 @@ from rest_framework import viewsets
 from rest_framework import status
 
 from rest_framework.authentication import SessionAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from categories.models import Category
@@ -101,6 +102,7 @@ class SaleProductViewSet(viewsets.ModelViewSet):
     """
 
     authentication_classes = (
+        JWTAuthentication,
         SessionAuthentication,
     )
     permission_classes = (
