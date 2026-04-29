@@ -1,8 +1,10 @@
 from itertools import chain
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from formula_one.models import ContactInformation
 from kernel.managers.get_role import get_all_roles
 from kernel.serializers.person import ProfileSerializer
@@ -19,6 +21,10 @@ class WhoAmI(GenericAPIView):
     This view shows some personal information of the currently logged in user
     """
 
+    authentication_classes = (
+        JWTAuthentication,
+        SessionAuthentication,
+    )
     permission_classes = [IsAuthenticated, ]
     serializer_class = ProfileSerializer
 

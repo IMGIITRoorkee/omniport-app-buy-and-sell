@@ -1,7 +1,9 @@
 from rest_framework import generics
 from rest_framework import status
-
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from buy_and_sell.permissions.is_product_owner import has_product_permission
 from buy_and_sell.models import Picture, SaleProduct
@@ -13,6 +15,11 @@ class PictureList(generics.CreateAPIView):
     View to upload picture for the product
     """
 
+    authentication_classes = (
+        JWTAuthentication,
+        SessionAuthentication,
+    )
+    permission_classes = (IsAuthenticated,)
     queryset = Picture.objects.all()
     serializer_class = PictureSerializer
 
