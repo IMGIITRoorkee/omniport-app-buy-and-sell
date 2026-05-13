@@ -23,3 +23,4 @@ class CategorySerializer(serializers.ModelSerializer):
             'slug',
             'sub_categories'
         )
+        ref_name= "BuyandSellCategory"
